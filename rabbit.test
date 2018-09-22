@@ -1,0 +1,35 @@
+#!/bin/bash
+# some rabbitmqadmin examples are in https://www.rabbitmq.com/management-cli.html
+host_whose_rabbit_will_be_tested=${1-slcipbf.us.oracle.com}
+echo Testing rabbit MQ on host $host_whose_rabbit_will_be_tested...
+
+export PATH=$dp/rabbit_mq/scripts:$PATH
+export RABBIT_MQ_ADMIN_HOST=$host_whose_rabbit_will_be_tested
+ename='verify_exchange'
+qname='verify_queue'
+qcontent='hi_world'
+t=/tmp/k
+
+trap "rm $t" EXIT
+
+rabbit.exchange.new $ename > $t
+echo 'exchange declared' | $dp/bin/assert.f.contains_all 'exchange creation' $t
+rabbit.exchange.ls > $t
+echo $ename | $dp/bin/assert.f.contains_all 'ls exchange' $t
+rabbit.queue.new $qname > $t
+echo 'queue declared' | $dp/bin/assert.f.contains_all 'queue creation' $t
+rabbit.queues.ls > $t
+echo $qname | $dp/bin/assert.f.contains_all 'ls queue' $t
+rabbit.msg.new $qname "$qcontent" > $t
+echo 'Message published' | $dp/bin/assert.f.contains_all 'msg publish' $t
+rabbit.msg.get $qname > $t
+echo $qcontent | $dp/bin/assert.f.contains_all 'msg get' $t
+exit
+$dp/rabbit_mq/scripts/rabbit.test slcipbf.us.oracle.com
+exit
+$dp/rabbit_mq/scripts/rabbit.test slcipbg.us.oracle.com
+exit
+host_whose_rabbit_will_be_tested=slcibhr.us.oracle.com
+host_whose_rabbit_will_be_tested=slcipbf.us.oracle.com
+host_whose_rabbit_will_be_tested=slcipbg.us.oracle.com
+$dp/rabbit_mq/scripts/rabbit.test $host_whose_rabbit_will_be_tested

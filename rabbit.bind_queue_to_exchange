@@ -1,0 +1,10 @@
+#!/bin/bash
+. `dirname $0`/rabbit.inc
+exchange=$1
+q=$2
+routing_key="$3"
+
+# https://stackoverflow.com/questions/4545660/rabbitmq-creating-queues-and-bindings-from-a-command-line
+Admin declare binding source="$exchange" destination_type="queue" destination="$q" routing_key="$routing_key"
+exit
+bx $dp/rabbit_mq/scripts/rabbit.bind_queue_to_exchange verify_exchange verify_queue verify_routing_key

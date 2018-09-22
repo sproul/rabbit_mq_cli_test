@@ -1,0 +1,6 @@
+#!/bin/bash
+. `dirname $0`/rabbit.inc
+queue=$1 # aka routing_key
+Admin get queue=$queue requeue=false
+exit
+bx $dp/rabbit_mq/scripts/rabbit.msg.get $qname 
